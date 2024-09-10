@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace GigWorkerExpenseTracking.Application
@@ -9,6 +10,10 @@ namespace GigWorkerExpenseTracking.Application
         {
             services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+  
+           
+
+
 
             return services;
         }

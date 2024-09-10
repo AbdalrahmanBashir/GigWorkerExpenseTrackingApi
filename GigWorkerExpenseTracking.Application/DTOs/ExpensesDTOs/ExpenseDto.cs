@@ -14,7 +14,10 @@ namespace GigWorkerExpenseTracking.Application.DTOs.ExpensesDTOs
         public string? userId { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public  IEnumerable<ExpenseItemDto>? ExpenseItems { get; set; }
-        public decimal TotalAmount { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime ActualDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime LastModifiedDate { get; set; }
+
     }
 }

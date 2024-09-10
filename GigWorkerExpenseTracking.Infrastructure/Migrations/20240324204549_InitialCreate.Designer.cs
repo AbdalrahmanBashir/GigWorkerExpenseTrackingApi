@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GigWorkerExpenseTracking.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240323234300_third3")]
-    partial class third3
+    [Migration("20240324204549_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,10 +30,22 @@ namespace GigWorkerExpenseTracking.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("ExpenseId");
 
+                    b.Property<DateTime>("ActualDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("LastModifiedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -48,6 +60,34 @@ namespace GigWorkerExpenseTracking.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Expenses", (string)null);
+                });
+
+            modelBuilder.Entity("GigWorkerExpenseTracking.Domain.MileageAggregate.Mileage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Distance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LogDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Mileages");
                 });
 
             modelBuilder.Entity("GigWorkerExpenseTracking.Domain.UserAggregate.User", b =>
@@ -98,37 +138,15 @@ namespace GigWorkerExpenseTracking.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.OwnsMany("GigWorkerExpenseTracking.Domain.ExpenseAggregate.Entities.ExpenseItem", "ExpenseItems", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<Guid>("ExpenseId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<decimal>("Amount")
-                                .HasPrecision(10, 2)
-                                .HasColumnType("decimal(10,2)");
-
-                            b1.Property<DateTime>("Date")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("Description")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("Id", "ExpenseId");
-
-                            b1.HasIndex("ExpenseId");
-
-                            b1.ToTable("ExpenseItems", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ExpenseId");
-                        });
-
-                    b.Navigation("ExpenseItems");
+            modelBuilder.Entity("GigWorkerExpenseTracking.Domain.MileageAggregate.Mileage", b =>
+                {
+                    b.HasOne("GigWorkerExpenseTracking.Domain.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

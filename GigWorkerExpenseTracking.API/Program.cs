@@ -1,7 +1,12 @@
+using GigWorkerExpenseTracking.API.Services;
 using GigWorkerExpenseTracking.Application;
 using GigWorkerExpenseTracking.Application.Models;
+using GigWorkerExpenseTracking.Application.Services;
 using GigWorkerExpenseTracking.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -31,9 +36,18 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
+builder.Services.AddSingleton<IUrlGenerator, UrlGeneratorService>();
 builder.Services.ConfigureApplicationServices();
 builder.Services.RegisterInfrastructureServices(builder.Configuration);
+
+builder.Services.AddSingleton<IUrlHelper>(factory =>
+{
+    var actionContext = factory.GetRequiredService<IActionContextAccessor>().ActionContext;
+    return new UrlHelper(actionContext);
+});
+
+builder.Services.AddHttpContextAccessor();
+
 
 
 

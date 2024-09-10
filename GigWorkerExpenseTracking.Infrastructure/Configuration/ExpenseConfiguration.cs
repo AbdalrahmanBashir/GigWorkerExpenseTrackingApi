@@ -12,35 +12,10 @@ namespace GigWorkerExpenseTracking.Infrastructure.Configuration
 
         {
             ConfigureExpenseTable(builder);
-            ConfigureExpenseItemsTable(builder);
+            
         }
 
-        private void ConfigureExpenseItemsTable(EntityTypeBuilder<Expense> builder)
-        {
-            builder.OwnsMany(x => x.ExpenseItems, item =>
-            {
-                item.ToTable("ExpenseItems");
-                item.WithOwner()
-                .HasForeignKey("ExpenseId");
-
-                item.HasKey("Id", "ExpenseId");
-                item.Property(x => x.Id)
-                .HasConversion(id => id!.expenseItemId,
-                value => ExpenseItemId.Create(value));
-
-                item.Property(x => x.Amount)
-                .HasPrecision(10, 2);
-
-                item.Property(x => x.Date);
-
-                item.Property(x => x.Description);
-            });
-
-
-            var Navigation = builder.Metadata.FindNavigation(nameof(Expense.ExpenseItems))!;
-            Navigation.SetPropertyAccessMode(PropertyAccessMode.Field);
-
-        }
+   
 
         private void ConfigureExpenseTable(EntityTypeBuilder<Expense> builder)
         {
@@ -57,15 +32,12 @@ namespace GigWorkerExpenseTracking.Infrastructure.Configuration
                 );
 
 
-            builder.Property(e => e.Name)
-                .HasMaxLength(100)
-                .IsRequired();
-            builder.Property(e => e.Description)
-                .HasMaxLength(200);
-            builder.Ignore(e => e.TotalAmount);
-
-
-
+            builder.Property(e => e.Name).HasMaxLength(100).IsRequired();
+            builder.Property(e => e.Description).HasMaxLength(200);
+            builder.Property(e => e.Amount).HasPrecision(18, 2).IsRequired();
+            builder.Property(e => e.ActualDate);
+            builder.Property(e => e.CreatedDate);
+            builder.Property(e => e.LastModifiedDate);
 
             builder.HasOne<User>()
               .WithMany()

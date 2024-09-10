@@ -1,5 +1,5 @@
 ﻿using GigWorkerExpenseTracking.Domain.ExpenseAggregate;
-using GigWorkerExpenseTracking.Domain.ExpenseAggregate.Entities;
+using GigWorkerExpenseTracking.Domain.MileageAggregate;
 using GigWorkerExpenseTracking.Domain.UserAggregate;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,8 +20,7 @@ namespace GigWorkerExpenseTracking.Infrastructure
 
         public DbSet<User> Users { get; set; }
         public DbSet<Expense> Expenses { get; set; }
-        // public DbSet<ExpenseItem> ExpenseItems { get; set; }
-        //public DbSet<Mileage> Mileages { get; set; }
+        public DbSet<Mileage> Mileages { get; set; }
 
     }
 }

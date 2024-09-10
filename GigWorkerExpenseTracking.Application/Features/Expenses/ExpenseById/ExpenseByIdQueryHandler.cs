@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using GigWorkerExpenseTracking.Application.Contracts;
 using GigWorkerExpenseTracking.Application.DTOs.ExpensesDTOs;
-using GigWorkerExpenseTracking.Domain.ExpenseAggregate;
 using GigWorkerExpenseTracking.Domain.ExpenseAggregate.ValueObjects;
-using GigWorkerExpenseTracking.Domain.UserAggregate.ValueObjects;
 using MediatR;
 
 namespace GigWorkerExpenseTracking.Application.Features.Expenses.ExpenseById

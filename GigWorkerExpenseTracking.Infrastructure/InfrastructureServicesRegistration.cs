@@ -19,6 +19,7 @@ namespace GigWorkerExpenseTracking.Infrastructure
 
             services.AddScoped<IExpenseRepository, ExpenseRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IMileageRepository, MileageRepository>();
             services.AddTransient<IAuthenticationService, JwtAuthentication>();
 
             return services;

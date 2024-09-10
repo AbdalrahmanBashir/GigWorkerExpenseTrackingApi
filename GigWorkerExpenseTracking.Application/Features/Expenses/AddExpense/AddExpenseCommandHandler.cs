@@ -23,11 +23,22 @@ namespace GigWorkerExpenseTracking.Application.Features.Expenses.AddExpense
            var newExpense =  expense.CreateExpense(
 
               expense.UserId!,
-              expense.Name,
-              expense.Description
+              expense.Name!,
+              expense.Description!,
+              expense.Amount,
+              expense.ActualDate
               );
 
-            await _expenseRepository.AddAsync(newExpense);
+            try
+            {
+                await _expenseRepository.AddAsync(newExpense);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
             return newExpense;
         }
     }

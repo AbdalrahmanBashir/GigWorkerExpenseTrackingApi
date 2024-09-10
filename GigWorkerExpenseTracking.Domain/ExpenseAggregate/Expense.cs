@@ -1,73 +1,52 @@
 ﻿using GigWorkerExpenseTracking.Domain.Commons;
-using GigWorkerExpenseTracking.Domain.ExpenseAggregate.Entities;
 using GigWorkerExpenseTracking.Domain.ExpenseAggregate.ValueObjects;
 using GigWorkerExpenseTracking.Domain.UserAggregate.ValueObjects;
+using System;
 
 namespace GigWorkerExpenseTracking.Domain.ExpenseAggregate
 {
-    public  class Expense : AggregateRoot<ExpenseId>
-    { 
-        public UserId? UserId { get;  set; }
-        public string Name { get; private set; }
-        public string Description { get; private set; }
-        private decimal _totalAmount;
-        private readonly List<ExpenseItem> _expenseItems = new();
-        public decimal TotalAmount => _totalAmount;
-        public IEnumerable<ExpenseItem> ExpenseItems => _expenseItems.AsReadOnly();
+    public class Expense : AggregateRoot<ExpenseId>
+    {
+        public UserId? UserId { get; private set; }
+        public string? Name { get; private set; }
+        public string? Description { get; private set; }
+        public decimal Amount { get; private set; }
+        public DateTime ActualDate { get; private set; }
+        public DateTime CreatedDate { get; private set; }
+        public DateTime LastModifiedDate { get; private set; }
 
-        private Expense() : base(default!)
+        private Expense()
+            : base(default!)
         {
-             // It's mainly used for ORM frameworks that require a parameterless constructor.
+            // Default constructor for ORM frameworks
         }
 
-       
-        public Expense(ExpenseId? id = null, UserId userId = null!, string name = null!,string description = null!) : base(id! ?? ExpenseId.CreateID())
+        private Expense(ExpenseId id, UserId userId, string name, string description, decimal amount,DateTime actualDate, DateTime createdDate, DateTime lastModifiedDate)
+            : base(id ?? ExpenseId.CreateID())
         {
-         
-            UserId = userId;
-            Name = name;
-            Description = description;
-            
-            RecalculateTotalAmount();
-           // _totalAmount = _expenseItems.Sum(e => (decimal)e.Amount);
+            UserId = userId ?? throw new ArgumentNullException(nameof(userId));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Description = description ?? throw new ArgumentNullException(nameof(description));
+            Amount = amount;
+            ActualDate = actualDate;
+            CreatedDate = createdDate;
+            LastModifiedDate = lastModifiedDate;
         }
 
-
-        public Expense CreateExpense(UserId userId,   string name, string description)
+        public Expense CreateExpense(UserId userId, string name, string description, decimal amount, DateTime actualDate)
         {
             var id = ExpenseId.CreateID();
-            var newExpense = new Expense(id, userId, name, description);
-            return newExpense;
+            var createdDate = DateTime.UtcNow;
+            var lastModifiedDate = createdDate;
+            return new Expense(id, userId, name, description, amount, actualDate , createdDate, lastModifiedDate);
         }
 
-
-        public ExpenseItem AddItem(ExpenseId expenseId, decimal amount, string description)
+        public void UpdateExpense(UserId userId, string name, string description)
         {
-
-            var newItem = ExpenseItem.CreateItem(expenseId, amount,  description);
-            _expenseItems.Add(newItem);
-            RecalculateTotalAmount();
-            return newItem;
+            UserId = userId ?? throw new ArgumentNullException(nameof(userId));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Description = description ?? throw new ArgumentNullException(nameof(description));
+            LastModifiedDate = DateTime.UtcNow;
         }
-
-
-        public void DeleteItem(Decimal amount, DateTime Date, string Description)
-        {
-
-            var existingItem = _expenseItems.FirstOrDefault(e => e.Date == Date && e.Amount == amount && e.Description == Description);
-
-            if (existingItem is null)
-            {
-                throw new ArgumentException("Expense not found.");
-            }
-            _expenseItems.Remove(existingItem);
-            RecalculateTotalAmount();
-        }
-
-        private void RecalculateTotalAmount()
-        {
-           // _totalAmount = _expenseItems.Sum(e => (decimal)e.Amount);
-        }
-
     }
 }

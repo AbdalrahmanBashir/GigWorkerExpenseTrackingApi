@@ -1,13 +1,11 @@
-﻿using GigWorkerExpenseTracking.Application.DTOs.ExpenseItemDTOs;
-using GigWorkerExpenseTracking.Application.DTOs.ExpensesDTOs;
+﻿using GigWorkerExpenseTracking.Application.DTOs.ExpensesDTOs;
+using GigWorkerExpenseTracking.Application.DTOs.PagingsDTOs;
 using GigWorkerExpenseTracking.Application.Features.Expenses.AddExpense;
-using GigWorkerExpenseTracking.Application.Features.Expenses.AddExpenseItem;
-using GigWorkerExpenseTracking.Application.Features.Expenses.ExpenseById;
 using GigWorkerExpenseTracking.Application.Features.Expenses.ExpensesByUser;
-using GigWorkerExpenseTracking.Domain.ExpenseAggregate;
-using GigWorkerExpenseTracking.Domain.ExpenseAggregate.Entities;
+using GigWorkerExpenseTracking.Application.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace GigWorkerExpenseTracking.API.Controllers
 {
@@ -16,6 +14,7 @@ namespace GigWorkerExpenseTracking.API.Controllers
     public class ExpenseController : ControllerBase
     {
         public readonly ISender _sender;
+
         public ExpenseController(ISender sender)
         {
             _sender = sender ?? throw new ArgumentNullException(nameof(sender));
@@ -33,23 +32,14 @@ namespace GigWorkerExpenseTracking.API.Controllers
             return Ok(exp);
         }
 
-        [HttpPost("CreateExpenseItem")]
-        public async Task<ActionResult<Guid>> CreateExpenseItem([FromBody] AddExpenseItemDto addExpenseItem)
-        {
-            var exp = await _sender.Send(new AddExpenseItemCommand { AddExpenseItemDto = addExpenseItem});
-            if (exp == null!)
-            {
-                return BadRequest("Failed to create expense.");
-            }
 
-            return Ok(exp);
-        }
 
 
         [HttpGet("{userId}")]
-        public async Task<ActionResult<IEnumerable<ExpenseDto>>> GetExpenses(Guid userId)
+        
+        public async Task<ActionResult<PagedResponse<ExpenseDto>>> GetExpenses(Guid userId, [FromQuery] PagingDTO pagingdDTO)
         {
-            var expenses = await _sender.Send(new ExpensesByUserQuery { UserId = userId });
+            var expenses = await _sender.Send(new ExpensesByUserQuery { UserId = userId, paging = pagingdDTO });
             if (expenses == null!)
             {
                 return BadRequest("Failed to create expense.");
@@ -58,17 +48,6 @@ namespace GigWorkerExpenseTracking.API.Controllers
             return Ok(expenses);
         }
 
-        [HttpGet]
-        [Route("expenses/{expenseId}")]
-        public async Task<ActionResult<(Expense, IEnumerable<ExpenseItem>)>> GetExpenseById(Guid expenseId)
-        {
-            var expenses = await _sender.Send(new ExpenseByIdQuery { ExpenseId = expenseId });
-            if (expenses == null!)
-            {
-                return BadRequest("Failed to create expense.");
-            }
 
-            return Ok(expenses);
-        }
     }
 }
